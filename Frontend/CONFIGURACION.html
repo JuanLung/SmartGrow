@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- Modal de confirmación para cerrar sesión -->
+  <div class="modal fade" id="confirmarLogoutModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title"><i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas cerrar sesión?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="confirmar-logout">Cerrar Sesión</button>
+        </div>
+      </div>
+    </div>
+  </div><meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuración de Cuenta - SmartGrow</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+    :root {
+      --verde-agricola: #20c273;
+      --azul-tech: #0d47a1;
+      --rojo-llamativo: #e63946;
+      --naranja-energetico: #f77f00;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      min-height: 100vh;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, rgba(13, 71, 161, 0.95), rgba(32, 194, 115, 0.95)),
+                  url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')
+                  no-repeat center center/cover;
+      padding-top: 20px;
+      background-attachment: fixed;
+    }
+
+    .navbar {
+      background-color: #0a3875;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .navbar-brand {
+      font-weight: 600;
+      color: white !important;
+      font-size: 1.3rem;
+      letter-spacing: 0.5px;
+    }
+
+    .navbar-nav .nav-link {
+      color: rgba(255,255,255,0.9) !important;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      margin: 0 0.2rem;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #23e682 !important;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .navbar-nav .nav-link.active {
+      color: #23e682 !important;
+      font-weight: 600;
+    }
+
+    .logo-img {
+      height: 30px;
+      margin-right: 5px;
+      vertical-align: middle;
+      transition: all 0.3s ease;
+    }
+
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+      filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+    }
+
+    @keyframes floating {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .config-container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .config-header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--azul-tech);
+    }
+
+    .form-group label {
+      font-weight: 500;
+      color: #555;
+    }
+
+    .form-control {
+      border-radius: 8px;
+      padding: 12px 15px;
+      border: 1px solid rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.8);
+    }
+
+    .form-control:focus {
+      border-color: var(--azul-tech);
+      box-shadow: 0 0 0 0.2rem rgba(13, 71, 161, 0.25);
+      background: white;
+    }
+
+    .btn {
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      padding: 10px 20px;
+      transition: all 0.3s ease;
+      border: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--verde-agricola), #19a35f);
+      border: none;
+      border-radius: 50px;
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #19a35f, var(--verde-agricola));
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(32, 194, 115, 0.3);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--azul-tech), #0a3367);
+      border: none;
+      border-radius: 50px;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0a3367, var(--azul-tech));
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(13, 71, 161, 0.3);
+    }
+
+    .plan-option {
+      border: 2px solid #eee;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .plan-option:hover {
+      border-color: var(--verde-agricola);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .plan-option.selected {
+      border-color: var(--verde-agricola);
+      background-color: rgba(32, 194, 115, 0.05);
+    }
+
+    .plan-option h5 {
+      color: var(--azul-tech);
+      margin-bottom: 5px;
+    }
+
+    .plan-option .precio {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--verde-agricola);
+    }
+
+    .plan-features {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 10px;
+    }
+
+    .plan-features li {
+      padding: 3px 0;
+    }
+
+    .plan-features li i {
+      margin-right: 5px;
+    }
+
+    .plan-features .text-success {
+      color: var(--verde-agricola) !important;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1050;
+      background: linear-gradient(135deg, var(--verde-agricola), #19a35f);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: none;
+      animation: slideIn 0.5s forwards, fadeOut 0.5s forwards 2.5s;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    footer {
+      background: rgba(10, 56, 117, 0.95);
+      padding: 25px 0;
+      margin-top: 50px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
+    }
+
+    footer p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      margin-bottom: 25px;
+    }
+
+    .card-header {
+      padding: 15px 20px;
+      background: rgba(10, 56, 117, 0.1);
+      border-bottom: 1px solid rgba(10, 56, 117, 0.1);
+      border-radius: 12px 12px 0 0 !important;
+      font-weight: 600;
+      color: var(--azul-tech);
+    }
+
+    .card-header i {
+      margin-right: 10px;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    /* Media queries */
+    @media (max-width: 768px) {
+      .navbar-nav .nav-link {
+        padding: 0.5rem 0.75rem;
+        margin: 0.1rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra de navegación -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-leaf mr-2 floating"></i>SMARTGROW
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="INDEX.html">
+              <i class="fas fa-home mr-1"></i>INICIO
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="DISPOSITIVOS.html">
+              <i class="fas fa-chart-bar mr-1"></i>DISPOSITIVO
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="CONFIGURACION.html">
+              <i class="fas fa-cog mr-1"></i>CONFIGURACION
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="logoutButton">
+              <i class="fas fa-sign-out-alt mr-1"></i>CERRAR SESION
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Notificación -->
+  <div id="notification" class="notification">
+    <i class="fas fa-bell mr-2"></i><span id="notification-text"></span>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="container py-4 mt-5">
+    <div class="config-container">
+      <div class="config-header">
+        <h1><i class="fas fa-user-cog"></i> Configuración de tu Cuenta</h1>
+        <p>Actualiza tu información personal y preferencias</p>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-user-edit"></i> Información Personal
+        </div>
+        <div class="card-body">
+          <form id="personal-form">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="nombre"><i class="fas fa-user"></i> Nombre</label>
+                  <input type="text" class="form-control" id="nombre" placeholder="Tu nombre" value="Juan">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="apellido"><i class="fas fa-user"></i> Apellido</label>
+                  <input type="text" class="form-control" id="apellido" placeholder="Tu apellido" value="Agricultor">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="correo"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+              <input type="email" class="form-control" id="correo" placeholder="tucorreo@ejemplo.com" value="juan.agricultor@example.com">
+            </div>
+
+            <div class="form-group">
+              <label for="telefono"><i class="fas fa-phone"></i> Teléfono</label>
+              <input type="tel" class="form-control" id="telefono" placeholder="Tu número de teléfono" value="+52 664 123 4567">
+            </div>
+
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-save mr-2"></i>Guardar Cambios
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-lock"></i> Cambiar Contraseña
+        </div>
+        <div class="card-body">
+          <form id="password-form">
+            <div class="form-group">
+              <label for="current-password"><i class="fas fa-key"></i> Contraseña Actual</label>
+              <input type="password" class="form-control" id="current-password" placeholder="Tu contraseña actual">
+            </div>
+
+            <div class="form-group">
+              <label for="new-password"><i class="fas fa-lock"></i> Nueva Contraseña</label>
+              <input type="password" class="form-control" id="new-password" placeholder="Tu nueva contraseña">
+              <small class="form-text text-muted">La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas y números.</small>
+            </div>
+
+            <div class="form-group">
+              <label for="confirm-password"><i class="fas fa-lock"></i> Confirmar Nueva Contraseña</label>
+              <input type="password" class="form-control" id="confirm-password" placeholder="Confirma tu nueva contraseña">
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-key mr-2"></i>Actualizar Contraseña
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-tags"></i> Tu Plan Actual
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="plan-option" data-plan="gratis" onclick="seleccionarPlan(this)">
+                <h5><i class="fas fa-seedling"></i> Gratis</h5>
+                <div class="precio">$0 <small>/mes</small></div>
+                <ul class="plan-features">
+                  <li><i class="fas fa-check text-success"></i> Clima en tiempo real</li>
+                  <li><i class="fas fa-check text-success"></i> Acceso al mapa básico</li>
+                  <li><i class="fas fa-times text-danger"></i> Recomendaciones de IA</li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="plan-option selected" data-plan="basico" onclick="seleccionarPlan(this)">
+                <h5><i class="fas fa-leaf"></i> Básico</h5>
+                <div class="precio">$49 <small>/mes</small></div>
+                <ul class="plan-features">
+                  <li><i class="fas fa-check text-success"></i> Clima en tiempo real</li>
+                  <li><i class="fas fa-check text-success"></i> Mapa interactivo completo</li>
+                  <li><i class="fas fa-check text-success"></i> IA con recomendaciones básicas</li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="plan-option" data-plan="pro" onclick="seleccionarPlan(this)">
+                <h5><i class="fas fa-rocket"></i> Pro</h5>
+                <div class="precio">$99 <small>/mes</small></div>
+                <ul class="plan-features">
+                  <li><i class="fas fa-check text-success"></i> Todo lo del plan Básico</li>
+                  <li><i class="fas fa-check text-success"></i> IA avanzada sin límites</li>
+                  <li><i class="fas fa-check text-success"></i> Soporte prioritario 24/7</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="planSeleccionado" value="basico">
+
+          <div class="text-center mt-4">
+            <button class="btn btn-success" id="cambiar-plan">
+              <i class="fas fa-sync-alt mr-2"></i>Actualizar Plan
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-header bg-warning text-white">
+          <i class="fas fa-download"></i> Exportar Mis Datos
+        </div>
+        <div class="card-body">
+          <p>Descarga una copia de toda tu información personal y datos de cultivo.</p>
+          <button class="btn btn-warning" id="exportar-datos">
+            <i class="fas fa-file-download mr-2"></i>Exportar Mis Datos
+          </button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+          <i class="fas fa-exclamation-triangle"></i> Eliminar Cuenta
+        </div>
+        <div class="card-body">
+          <p class="text-danger">Advertencia: Esta acción eliminará permanentemente tu cuenta y todos tus datos. Esta acción no se puede deshacer.</p>
+          <button class="btn btn-danger" id="eliminar-cuenta">
+            <i class="fas fa-user-slash mr-2"></i>Eliminar Mi Cuenta
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación para eliminar cuenta -->
+  <div class="modal fade" id="confirmarEliminacionModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title"><i class="fas fa-exclamation-triangle mr-2"></i>Confirmar Eliminación</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas eliminar permanentemente tu cuenta? Esta acción no se puede deshacer y perderás todos tus datos.</p>
+          <div class="form-group">
+            <label for="confirm-delete-password">Ingresa tu contraseña para confirmar:</label>
+            <input type="password" class="form-control" id="confirm-delete-password" placeholder="Tu contraseña">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirmar-eliminacion">Eliminar Permanentemente</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p class="mb-0">© 2025 SmartGrow - Agricultura con Inteligencia</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // Mostrar notificación
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      const notificationText = document.getElementById('notification-text');
+      notificationText.textContent = message;
+      notification.style.display = 'block';
+      notification.style.animation = 'none';
+      void notification.offsetWidth;
+      notification.style.animation = 'slideIn 0.5s forwards, fadeOut 0.5s forwards 2.5s';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    // Función para seleccionar plan
+    function seleccionarPlan(element) {
+      // Remover clase selected de todos los planes
+      document.querySelectorAll('.plan-option').forEach(plan => {
+        plan.classList.remove('selected');
+      });
+
+      // Añadir clase selected al plan elegido
+      element.classList.add('selected');
+
+      // Actualizar valor del input hidden
+      document.getElementById('planSeleccionado').value = element.getAttribute('data-plan');
+    }
+
+    // Cargar datos del usuario desde localStorage (simulado)
+    document.addEventListener('DOMContentLoaded', function() {
+      // En una aplicación real, esto vendría del servidor
+      const usuarioGuardado = localStorage.getItem('usuarioRegistrado');
+
+      if (usuarioGuardado) {
+        const usuario = JSON.parse(usuarioGuardado);
+
+        // Llenar formulario con datos existentes
+        document.getElementById('nombre').value = usuario.nombre || '';
+        document.getElementById('apellido').value = usuario.apellido || '';
+        document.getElementById('correo').value = usuario.correo || '';
+        document.getElementById('telefono').value = usuario.telefono || '';
+
+        // Seleccionar plan actual
+        if (usuario.plan) {
+          const planElements = document.querySelectorAll('.plan-option');
+          planElements.forEach(plan => {
+            plan.classList.remove('selected');
+            if (plan.getAttribute('data-plan') === usuario.plan) {
+              plan.classList.add('selected');
+            }
+          });
+          document.getElementById('planSeleccionado').value = usuario.plan;
+        }
+      }
+
+      // Efecto de scroll en navbar
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+          document.querySelector('.navbar').classList.add('scrolled');
+        } else {
+          document.querySelector('.navbar').classList.remove('scrolled');
+        }
+      });
+    });
+
+    // Manejar envío del formulario de información personal
+    document.getElementById('personal-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Obtener datos actuales
+      const usuarioGuardado = localStorage.getItem('usuarioRegistrado');
+      let usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : {};
+
+      // Actualizar con nueva información
+      usuario.nombre = document.getElementById('nombre').value;
+      usuario.apellido = document.getElementById('apellido').value;
+      usuario.correo = document.getElementById('correo').value;
+      usuario.telefono = document.getElementById('telefono').value;
+
+      // Guardar en localStorage (solo para demo)
+      localStorage.setItem('usuarioRegistrado', JSON.stringify(usuario));
+      localStorage.setItem('usuarioActivo', JSON.stringify(usuario));
+
+      showNotification('Información personal actualizada correctamente');
+    });
+
+    // Manejar envío del formulario de contraseña
+    document.getElementById('password-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const currentPassword = document.getElementById('current-password').value;
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      // Validar que las contraseñas coincidan
+      if (newPassword !== confirmPassword) {
+        showNotification('Las contraseñas nuevas no coinciden');
+        return;
+      }
+
+      // En una aplicación real, aquí verificaríamos la contraseña actual
+      // y actualizaríamos en el servidor
+
+      showNotification('Contraseña actualizada correctamente');
+
+      // Limpiar campos
+      document.getElementById('current-password').value = '';
+      document.getElementById('new-password').value = '';
+      document.getElementById('confirm-password').value = '';
+    });
+
+    // Manejar cambio de plan
+    document.getElementById('cambiar-plan').addEventListener('click', function() {
+      // Obtener datos actuales
+      const usuarioGuardado = localStorage.getItem('usuarioRegistrado');
+      let usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : {};
+
+      // Actualizar plan
+      usuario.plan = document.getElementById('planSeleccionado').value;
+
+      // Guardar en localStorage (solo para demo)
+      localStorage.setItem('usuarioRegistrado', JSON.stringify(usuario));
+      localStorage.setItem('usuarioActivo', JSON.stringify(usuario));
+
+      showNotification('Plan actualizado correctamente');
+    });
+
+    // Manejar exportación de datos
+    document.getElementById('exportar-datos').addEventListener('click', function() {
+      // Obtener datos del usuario
+      const usuarioGuardado = localStorage.getItem('usuarioRegistrado');
+
+      if (usuarioGuardado) {
+        // Crear un objeto Blob para descargar los datos
+        const blob = new Blob([usuarioGuardado], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        // Crear un elemento de enlace para descargar
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'mis_datos_smartgrow.json';
+        document.body.appendChild(a);
+        a.click();
+
+        // Limpiar
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 0);
+
+        showNotification('Datos exportados correctamente');
+      } else {
+        showNotification('No hay datos para exportar');
+      }
+    });
+
+    // Mostrar modal de confirmación para eliminar cuenta
+    document.getElementById('eliminar-cuenta').addEventListener('click', function() {
+      $('#confirmarEliminacionModal').modal('show');
+    });
+
+    // Manejar eliminación de cuenta
+    document.getElementById('confirmar-eliminacion').addEventListener('click', function() {
+      const password = document.getElementById('confirm-delete-password').value;
+
+      // En una aplicación real, verificaríamos la contraseña
+      if (!password) {
+        showNotification('Por favor ingresa tu contraseña para confirmar');
+        return;
+      }
+
+      // Eliminar datos del usuario
+      localStorage.removeItem('usuarioRegistrado');
+      localStorage.removeItem('usuarioActivo');
+
+      // Cerrar modal
+      $('#confirmarEliminacionModal').modal('hide');
+
+      showNotification('Cuenta eliminada correctamente. Redirigiendo...');
+
+      // Redirigir a la página de inicio
+      setTimeout(() => {
+        window.location.href = 'PAGINA PRINCIPAL.html';
+      }, 2000);
+    });
+
+    // Manejar cierre de sesión
+    document.getElementById('logoutButton').addEventListener('click', function() {
+      // En una aplicación real, aquí cerraríamos la sesión en el servidor
+      localStorage.removeItem('usuarioActivo');
+
+      showNotification('Cerrando sesión...');
+
+      // Redirigir después de 2 segundos
+      setTimeout(() => {
+        window.location.href = 'INDEX.html';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

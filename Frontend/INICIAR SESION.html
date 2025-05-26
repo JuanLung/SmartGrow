@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Iniciar Sesión - SmartGrow</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <style>
+    :root {
+      --verde-agricola: #20c273;
+      --azul-tech: #0d47a1;
+      --rojo-llamativo: #e63946;
+      --naranja-energetico: #f77f00;
+    }
+
+    body {
+      color: #333;
+      min-height: 100vh;
+      transition: background-color 0.5s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, rgba(13, 71, 161, 0.9), rgba(32, 194, 115, 0.9)),
+                  url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')
+                  no-repeat center center/cover;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-img {
+      height: 40px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    .navbar {
+      background-color: #0a3875;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    .navbar-brand {
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .navbar-nav .nav-link {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #23e682;
+    }
+
+    /* Estilos para el botón de regreso */
+    .header-container {
+      margin-bottom: 20px;
+    }
+
+    .btn-back {
+      background-color: #0a3875;
+      color: white;
+      border-radius: 30px;
+      padding: 8px 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+      display: inline-block;
+      text-decoration: none;
+    }
+
+    .btn-back:hover {
+      background-color: #083062;
+      color: white;
+      text-decoration: none;
+    }
+
+    .login-container {
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 30px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .login-header h1 {
+      color: var(--azul-tech);
+      font-weight: bold;
+    }
+
+    .login-logo {
+      width: 100px;
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-weight: 500;
+      color: #555;
+    }
+
+    .form-control {
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      padding: 10px 15px;
+      height: auto;
+      transition: all 0.3s;
+    }
+
+    .form-control:focus {
+      border-color: var(--verde-agricola);
+      box-shadow: 0 0 0 0.2rem rgba(32, 194, 115, 0.25);
+    }
+
+    .btn-success {
+      background-color: var(--verde-agricola);
+      border-color: var(--verde-agricola);
+      padding: 10px 20px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-success:hover {
+      background-color: #19a35f;
+      border-color: #19a35f;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(32, 194, 115, 0.3);
+    }
+
+    .social-login {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .social-login p {
+      color: #777;
+      margin-bottom: 15px;
+    }
+
+    .social-btn {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #f8f9fa;
+      color: #333;
+      text-align: center;
+      line-height: 40px;
+      margin: 0 5px;
+      transition: all 0.3s;
+    }
+
+    .social-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .social-btn.facebook {
+      background-color: #3b5998;
+      color: white;
+    }
+
+    .social-btn.google {
+      background-color: #db4437;
+      color: white;
+    }
+
+    .social-btn.apple {
+      background-color: #000;
+      color: white;
+    }
+
+    /* Notificación flotante */
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: var(--verde-agricola);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 50px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+      animation: slideIn 0.5s forwards, fadeOut 0.5s forwards 2.5s;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    footer {
+      background-color: #0a3875;
+      padding: 20px 0;
+      margin-top: auto;
+      color: white;
+      text-align: center;
+    }
+
+    .forgot-password {
+      display: block;
+      text-align: right;
+      color: var(--azul-tech);
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+
+    .forgot-password:hover {
+      color: var(--verde-agricola);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header con botón de regreso -->
+  <div class="container header-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <a href="INDEX.html" class="btn-back">
+        <i class="fas fa-arrow-left mr-2"></i> Regresar a Página Principal
+      </a>
+      <div>
+        <img src="LOGO.png" alt="SmartGrow Logo" class="logo-img">
+        <span class="h5 mb-0 font-weight-bold text-dark">SMARTGROW</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="container login-container">
+    <div class="login-header">
+      <img src="LOGO.png" alt="SmartGrow Logo" class="login-logo">
+      <h1><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</h1>
+      <p>Accede a tu cuenta de SmartGrow</p>
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="correo"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+        <input type="email" class="form-control" id="correo" placeholder="tucorreo@ejemplo.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+        <input type="password" class="form-control" id="password" placeholder="Tu contraseña" required>
+      </div>
+
+      <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="recordar">
+        <label class="form-check-label" for="recordar">Recordar mis datos</label>
+      </div>
+
+      <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+
+      <button type="submit" class="btn btn-success btn-block btn-lg">
+        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+      </button>
+    </form>
+
+    <div class="social-login">
+      <p>O inicia sesión con:</p>
+      <a href="#" class="social-btn facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="social-btn google"><i class="fab fa-google"></i></a>
+      <a href="#" class="social-btn apple"><i class="fab fa-apple"></i></a>
+    </div>
+
+    <div class="text-center mt-4">
+      <p>¿No tienes una cuenta? <a href="REGISTRO.html">Regístrate aquí</a></p>
+    </div>
+  </div>
+
+  <!-- Notificación flotante -->
+  <div id="notification" class="notification">
+    <i class="fas fa-bell mr-2"></i> <span id="notification-text">¡Inicio de sesión exitoso!</span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p class="mb-0">© 2025 SmartGrow - Agricultura con Inteligencia</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // Mostrar notificación
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      const notificationText = document.getElementById('notification-text');
+      notificationText.textContent = message;
+      notification.style.display = 'block';
+      notification.style.animation = 'none';
+      void notification.offsetWidth;
+      notification.style.animation = 'slideIn 0.5s forwards, fadeOut 0.5s forwards 2.5s';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    // Manejar envío del formulario
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // En un caso real, aquí verificaríamos las credenciales con el servidor
+      // Para esta demo, simulamos un inicio de sesión exitoso
+
+      const correo = document.getElementById('correo').value;
+      const recordar = document.getElementById('recordar').checked;
+
+      // Crear objeto de usuario
+      const usuario = {
+        correo: correo,
+        recordar: recordar
+      };
+
+      // Guardar en localStorage (solo para demo)
+      localStorage.setItem('usuarioActivo', JSON.stringify(usuario));
+
+      // Mostrar mensaje de éxito
+      showNotification('¡Inicio de sesión exitoso! Redirigiendo...');
+
+      // Redirigir después de 2 segundos
+      setTimeout(() => {
+        window.location.href = 'INDEX.html';
+      }, 2000);
+    });
+
+    // Verificar si hay datos guardados
+    document.addEventListener('DOMContentLoaded', function() {
+      const usuarioRegistrado = localStorage.getItem('usuarioRegistrado');
+      if (usuarioRegistrado) {
+        const usuario = JSON.parse(usuarioRegistrado);
+        document.getElementById('correo').value = usuario.correo || '';
+      }
+    });
+  </script>
+</body>
+</html>

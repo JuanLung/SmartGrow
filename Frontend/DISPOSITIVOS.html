@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MI PANEL - Dispositivos de Monitoreo</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos CSS (usa los mismos que tienes en MI PANEL.html) -->
+  <style>
+    :root {
+      --verde-agricola: #20c273;
+      --azul-tech: #0d47a1;
+      --rojo-llamativo: #e63946;
+      --naranja-energetico: #f77f00;
+      --morado-profundo: #6a1b9a;
+      --verde-oscuro: #1b5e20;
+      --gris-claro: #f5f7fa;
+      --gris-oscuro: #263238;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #333;
+      min-height: 100vh;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, rgba(13, 71, 161, 0.95), rgba(32, 194, 115, 0.95)),
+                  url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')
+                  no-repeat center center/cover;
+      padding-top: 20px;
+      background-attachment: fixed;
+    }
+
+    /* Barra de navegación mejorada */
+    .navbar {
+      background: rgba(10, 56, 117, 0.9);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      background: rgba(10, 56, 117, 0.98);
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .navbar-brand {
+      font-weight: 600;
+      color: white !important;
+      font-size: 1.3rem;
+      letter-spacing: 0.5px;
+    }
+
+    .navbar-nav .nav-link {
+      color: rgba(255,255,255,0.9) !important;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      margin: 0 0.2rem;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #23e682 !important;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .navbar-nav .nav-link.active {
+      color: #23e682 !important;
+      font-weight: 600;
+    }
+
+    /* Notificaciones mejoradas */
+    #notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1050;
+      background: linear-gradient(135deg, var(--verde-agricola), var(--verde-oscuro));
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: none;
+      animation: slideIn 0.5s forwards, fadeOut 0.5s forwards 2.5s;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    /* Logo y animaciones */
+    .logo-img {
+      height: 30px;
+      margin-right: 5px;
+      vertical-align: middle;
+      transition: all 0.3s ease;
+    }
+
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+      filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+    }
+
+    @keyframes floating {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    /* Estilos para las tarjetas */
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(5px);
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .card-header {
+      padding: 15px 20px;
+      background: rgba(10, 56, 117, 0.1);
+      border-bottom: 1px solid rgba(10, 56, 117, 0.1);
+      border-radius: 12px 12px 0 0 !important;
+      font-weight: 600;
+      color: var(--azul-tech);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-header i {
+      margin-right: 10px;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    /* Estilos para las tarjetas de gráficos */
+    .chart-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .chart-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .chart-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-weight: 600;
+      color: var(--azul-tech);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.7);
+    }
+
+    .chart-container {
+      padding: 20px;
+      height: 300px;
+    }
+
+    .device-status {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      background: rgba(248, 249, 250, 0.7);
+      border-radius: 10px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+
+    .device-status:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .status-indicator {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: var(--verde-agricola);
+      position: relative;
+    }
+
+    .status-indicator.online {
+      background-color: var(--verde-agricola);
+      box-shadow: 0 0 10px rgba(32, 194, 115, 0.5);
+      animation: pulse-green 2s infinite;
+    }
+
+    .status-indicator.offline {
+      background-color: var(--rojo-llamativo);
+      box-shadow: 0 0 10px rgba(230, 57, 70, 0.5);
+    }
+
+    @keyframes pulse-green {
+      0% { box-shadow: 0 0 0 0 rgba(32, 194, 115, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(32, 194, 115, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(32, 194, 115, 0); }
+    }
+
+    .sensor-card {
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      transition: all 0.3s;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .sensor-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+
+    .sensor-header {
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sensor-icon {
+      font-size: 2rem;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin-right: 15px;
+      color: white;
+    }
+
+    .temperatura-icon {
+      background: linear-gradient(135deg, #e63946, #e02130);
+    }
+
+    .humedad-icon {
+      background: linear-gradient(135deg, #457b9d, #3d6f8e);
+    }
+
+    .lluvia-icon {
+      background: linear-gradient(135deg, #3a86ff, #2970e6);
+    }
+
+    .luz-icon {
+      background: linear-gradient(135deg, #ff9e00, #e68a00);
+    }
+
+    .viento-icon {
+      background: linear-gradient(135deg, #8ecae6, #7ab8d6);
+    }
+
+    .sensor-value {
+      font-size: 2.5rem;
+      font-weight: 300;
+      margin-bottom: 5px;
+    }
+
+    .sensor-label {
+      font-size: 1rem;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Jumbotron estilizado */
+    .jumbotron {
+      background: linear-gradient(135deg, rgba(13, 71, 161, 0.9), rgba(32, 194, 115, 0.9));
+      border-radius: 12px;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      transition: all 0.3s;
+      padding: 3rem 2rem;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* Botones mejorados */
+    .btn {
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      padding: 10px 20px;
+      transition: all 0.3s ease;
+      border: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--azul-tech), #0a3367);
+      border: none;
+      border-radius: 50px;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0a3367, var(--azul-tech));
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(13, 71, 161, 0.3);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--verde-agricola), #19a35f);
+      border: none;
+      border-radius: 50px;
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #19a35f, var(--verde-agricola));
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(32, 194, 115, 0.3);
+    }
+
+    /* Estilos para el filtro de fechas */
+    .date-filter {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .date-filter .form-control {
+      border-radius: 50px;
+      padding: 10px 15px;
+      border: none;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    /* Footer mejorado */
+    footer {
+      background: rgba(10, 56, 117, 0.95);
+      padding: 25px 0;
+      margin-top: 50px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
+      backdrop-filter: blur(5px);
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    footer p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Animación de entrada */
+    .fade-in {
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Efecto de glassmorphism */
+    .glass {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    /* Responsive design */
+    @media (max-width: 992px) {
+      .date-filter {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar-nav .nav-link {
+        padding: 0.5rem 0.75rem;
+        margin: 0.1rem;
+        font-size: 0.9rem;
+      }
+
+      .sensor-value {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .chart-tabs {
+        flex-wrap: wrap;
+      }
+
+      .chart-tab {
+        flex: 1 0 100%;
+        text-align: center;
+        padding: 10px;
+      }
+    }
+
+    /* Efecto de scroll suave */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-leaf mr-2 floating"></i>MI PANEL
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="MI PANEL.html">
+              <i class="fas fa-home mr-1"></i>INICIO
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="DISPOSITIVO.html">
+              <i class="fas fa-microchip mr-1"></i>DISPOSITIVO
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="CONFIGURACION.html">
+              <i class="fas fa-cog mr-1"></i>CONFIGURACION
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="logoutButton">
+              <i class="fas fa-sign-out-alt mr-1"></i>CERRAR SESION
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div id="notification">
+    <i class="fas fa-bell mr-2"></i><span id="notification-text"></span>
+  </div>
+
+  <div class="container py-4 mt-5">
+    <div class="row mb-4 fade-in">
+      <div class="col-12">
+        <h1 class="text-white mb-4"><i class="fas fa-microchip mr-2"></i>Monitoreo de Dispositivos</h1>
+
+        <!-- Estado del dispositivo -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="fas fa-heartbeat mr-2"></i>Estado del Dispositivo
+          </div>
+          <div class="card-body">
+            <div class="device-status">
+              <div class="status-indicator offline" id="deviceStatus"></div>
+              <div>
+                <h5 class="mb-1" id="deviceName">Arduino Sensor</h5>
+                <p class="mb-0" id="deviceStatusText">Desconectado - Error al obtener datos</p>
+              </div>
+              <div class="ml-auto">
+                <span class="badge badge-secondary" id="lastUpdate">Actualizado hace 2 minutos</span>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4">
+                <div class="card sensor-card bg-white">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center">
+                      <div class="sensor-icon temperatura-icon">
+                        <i class="fas fa-temperature-high"></i>
+                      </div>
+                      <div>
+                        <div class="sensor-value" id="tempValue">--°C</div>
+                        <div class="sensor-label">Temperatura</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card sensor-card bg-white">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center">
+                      <div class="sensor-icon humedad-icon">
+                        <i class="fas fa-tint"></i>
+                      </div>
+                      <div>
+                        <div class="sensor-value" id="humValue">--%</div>
+                        <div class="sensor-label">Humedad</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card sensor-card bg-white">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center">
+                      <div class="sensor-icon lluvia-icon">
+                        <i class="fas fa-cloud-rain"></i>
+                      </div>
+                      <div>
+                        <div class="sensor-value" id="rainValue">--</div>
+                        <div class="sensor-label">Lluvia</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mt-3">
+              <div class="col-md-6">
+                <div class="card sensor-card bg-white">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center">
+                      <div class="sensor-icon luz-icon">
+                        <i class="fas fa-sun"></i>
+                      </div>
+                      <div>
+                        <div class="sensor-value" id="lightValue">--</div>
+                        <div class="sensor-label">Intensidad de Luz</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card sensor-card bg-white">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center">
+                      <div class="sensor-icon viento-icon">
+                        <i class="fas fa-wind"></i>
+                      </div>
+                      <div>
+                        <div class="sensor-value" id="windValue">-- km/h</div>
+                        <div class="sensor-label">Velocidad Viento</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtro de fechas y botones para exportar datos -->
+    <div class="row fade-in" style="animation-delay: 0.3s;">
+      <div class="col-12">
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="fas fa-filter mr-2"></i>Filtros y Exportación
+          </div>
+          <div class="card-body">
+            <div class="date-filter">
+              <div>
+                <label for="startDate">Fecha inicial:</label>
+                <input type="date" class="form-control" id="startDate">
+              </div>
+              <div>
+                <label for="endDate">Fecha final:</label>
+                <input type="date" class="form-control" id="endDate">
+              </div>
+              <div>
+                <label>&nbsp;</label>
+                <button class="btn btn-primary d-block" id="filterBtn">
+                  <i class="fas fa-search mr-1"></i>Filtrar
+                </button>
+              </div>
+              <div class="ml-auto">
+                <label>&nbsp;</label>
+                <button class="btn btn-success d-block" id="exportDataBtn">
+                  <i class="fas fa-file-download mr-1"></i>Exportar CSV
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficas históricas -->
+    <div class="row fade-in" style="animation-delay: 0.6s;">
+      <div class="col-md-6">
+        <div class="chart-card">
+          <div class="chart-header">
+            <span><i class="fas fa-temperature-high text-danger mr-2"></i>Temperatura (°C)</span>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-primary active" data-range="day">Día</button>
+              <button class="btn btn-outline-primary" data-range="week">Semana</button>
+              <button class="btn btn-outline-primary" data-range="month">Mes</button>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="temperatureChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="chart-card">
+          <div class="chart-header">
+            <span><i class="fas fa-tint text-primary mr-2"></i>Humedad (%)</span>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-primary active" data-range="day">Día</button>
+              <button class="btn btn-outline-primary" data-range="week">Semana</button>
+              <button class="btn btn-outline-primary" data-range="month">Mes</button>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="humidityChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row fade-in" style="animation-delay: 0.9s;">
+      <div class="col-md-6">
+        <div class="chart-card">
+          <div class="chart-header">
+            <span><i class="fas fa-cloud-rain text-info mr-2"></i>Lluvia</span>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-primary active" data-range="day">Día</button>
+              <button class="btn btn-outline-primary" data-range="week">Semana</button>
+              <button class="btn btn-outline-primary" data-range="month">Mes</button>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="rainChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="chart-card">
+          <div class="chart-header">
+            <span><i class="fas fa-sun text-warning mr-2"></i>Intensidad de Luz</span>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-primary active" data-range="day">Día</button>
+              <button class="btn btn-outline-primary" data-range="week">Semana</button>
+              <button class="btn btn-outline-primary" data-range="month">Mes</button>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="lightChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row fade-in" style="animation-delay: 1.2s;">
+      <div class="col-md-12">
+        <div class="chart-card">
+          <div class="chart-header">
+            <span><i class="fas fa-wind text-secondary mr-2"></i>Velocidad del Viento (km/h)</span>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-primary active" data-range="day">Día</button>
+              <button class="btn btn-outline-primary" data-range="week">Semana</button>
+              <button class="btn btn-outline-primary" data-range="month">Mes</button>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="windChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de registro de datos -->
+    <div class="row fade-in" style="animation-delay: 1.5s;">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-table mr-2"></i>Registro de Datos
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped" id="dataTable">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Temperatura</th>
+                    <th>Humedad</th>
+                    <th>Lluvia</th>
+                    <th>Luz</th>
+                    <th>Viento</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody">
+                  <!-- Los datos se cargarán dinámicamente desde la API -->
+                </tbody>
+              </table>
+            </div>
+            <nav>
+              <ul class="pagination justify-content-center" id="pagination">
+                <!-- La paginación se generará dinámicamente -->
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="glass">
+    <div class="container">
+      <p class="mb-0">© 2025 SmartGrow - Agricultura con Inteligencia</p>
+    </div>
+  </footer>
+
+  <!-- Modal de cierre de sesión -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cerrar Sesión</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas cerrar sesión?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" href="login.html" class="btn btn-primary" id="confirmLogout">Cerrar Sesión</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    // Configuración global de Chart.js
+    Chart.defaults.font.family = "'Poppins', sans-serif";
+    Chart.defaults.color = '#555';
+    Chart.defaults.scale.grid.color = 'rgba(0,0,0,0.05)';
+
+    // Variables globales
+    let currentPage = 1;
+    const rowsPerPage = 10;
+
+    // Colores para las gráficas
+    const chartColors = {
+      temperature: {
+        borderColor: '#e63946',
+        backgroundColor: 'rgba(230, 57, 70, 0.2)'
+      },
+      humidity: {
+        borderColor: '#457b9d',
+        backgroundColor: 'rgba(69, 123, 157, 0.2)'
+      },
+      rain: {
+        borderColor: '#3a86ff',
+        backgroundColor: 'rgba(58, 134, 255, 0.2)'
+      },
+      light: {
+        borderColor: '#ff9e00',
+        backgroundColor: 'rgba(255, 158, 0, 0.2)'
+      },
+      wind: {
+        borderColor: '#8ecae6',
+        backgroundColor: 'rgba(142, 202, 230, 0.2)'
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initPage();
+      setupEventListeners();
+
+      // Efecto de scroll en navbar
+      window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+          document.querySelector('.navbar').classList.add('scrolled');
+        } else {
+          document.querySelector('.navbar').classList.remove('scrolled');
+        }
+      });
+
+      // Establecer fecha actual en los campos de fecha
+      const today = new Date();
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+      document.getElementById('startDate').valueAsDate = oneWeekAgo;
+      document.getElementById('endDate').valueAsDate = today;
+    });
+
+    function initPage() {
+      showNotification('Error al conectar con el dispositivo');
+
+      // Inicializar las gráficas con placeholders
+      initCharts();
+    }
+
+    function setupEventListeners() {
+      // Evento para el botón de cerrar sesión
+      document.getElementById('logoutButton').addEventListener('click', function() {
+        $('#logoutModal').modal('show');
+      });
+
+      document.getElementById('confirmLogout').addEventListener('click', function() {
+        window.location.href = "INDEX.html";
+      });
+
+      // Evento para el botón de filtrar datos
+      document.getElementById('filterBtn').addEventListener('click', function() {
+        showNotification('Error: No se puede conectar con el dispositivo');
+      });
+
+      // Evento para el botón de exportar datos
+      document.getElementById('exportDataBtn').addEventListener('click', function() {
+        showNotification('Error: No hay datos disponibles para exportar');
+      });
+
+      // Eventos para los botones de rango de tiempo en las gráficas
+      document.querySelectorAll('.btn-group button').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const parentHeader = this.closest('.chart-header');
+
+          // Actualizar estado visual de los botones
+          parentHeader.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+
+          showNotification('No hay datos disponibles para este rango');
+        });
+      });
+    }
+
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      const notificationText = document.getElementById('notification-text');
+      notificationText.textContent = message;
+      notification.style.display = 'block';
+      notification.style.animation = 'none';
+      void notification.offsetWidth;
+      notification.style.animation = 'slideIn 0.5s forwards, fadeOut 0.5s forwards 2.5s';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    function initCharts() {
+      const temperatureCtx = document.getElementById('temperatureChart').getContext('2d');
+      const humidityCtx = document.getElementById('humidityChart').getContext('2d');
+      const rainCtx = document.getElementById('rainChart').getContext('2d');
+      const lightCtx = document.getElementById('lightChart').getContext('2d');
+      const windCtx = document.getElementById('windChart').getContext('2d');
+
+      // Opciones comunes para las gráficas
+      const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              maxTicksLimit: 8
+            }
+          },
+          y: {
+            beginAtZero: false,
+            ticks: {
+              padding: 10
+            }
+          }
+        },
+        elements: {
+          line: {
+            tension: 0.4
+          },
+          point: {
+            radius: 0,
+            hitRadius: 10,
+            hoverRadius: 4
+          }
+        }
+      };
+
+      // Crear las gráficas con datos vacíos
+      new Chart(temperatureCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Temperatura (°C)',
+            data: [],
+            borderColor: chartColors.temperature.borderColor,
+            backgroundColor: chartColors.temperature.backgroundColor,
+            fill: true
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              title: {
+                display: true,
+                text: 'Temperatura (°C)'
+              }
+            }
+          }
+        }
+      });
+
+      new Chart(humidityCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Humedad (%)',
+            data: [],
+            borderColor: chartColors.humidity.borderColor,
+            backgroundColor: chartColors.humidity.backgroundColor,
+            fill: true
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              title: {
+                display: true,
+                text: 'Humedad (%)'
+              }
+            }
+          }
+        }
+      });
+
+      new Chart(rainCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Nivel de lluvia',
+            data: [],
+            borderColor: chartColors.rain.borderColor,
+            backgroundColor: chartColors.rain.backgroundColor,
+            fill: true
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              reverse: true, // Valores más bajos = más lluvia
+              title: {
+                display: true,
+                text: 'Nivel de lluvia'
+              }
+            }
+          }
+        }
+      });
+
+      new Chart(lightCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Intensidad de luz (lúmenes)',
+            data: [],
+            borderColor: chartColors.light.borderColor,
+            backgroundColor: chartColors.light.backgroundColor,
+            fill: true
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              title: {
+                display: true,
+                text: 'Intensidad de luz (lúmenes)'
+              }
+            }
+          }
+        }
+      });
+
+      new Chart(windCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Velocidad del viento (km/h)',
+            data: [],
+            borderColor: chartColors.wind.borderColor,
+            backgroundColor: chartColors.wind.backgroundColor,
+            fill: true
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              title: {
+                display: true,
+                text: 'Velocidad del viento (km/h)'
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+
+  <!-- Cargar el script de integración de la API -->
+  <script>
+  /**
+   * Script para integrar la página DISPOSITIVOS.html con la API de PythonAnywhere
+   * Este archivo debe incluirse al final de DISPOSITIVOS.html
+   */
+
+  // Cuando el documento esté listo
+  document.addEventListener('DOMContentLoaded', function() {
+    // Obtener la URL base (útil para PythonAnywhere)
+    const API_BASE_URL = window.location.origin;
+
+    // Sobrescribir la función fetchSensorData para usar la API real
+    window.fetchSensorData = function() {
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+
+      showNotification('Cargando datos de sensores...');
+
+      // Hacer la petición a la API real
+      fetch(`${API_BASE_URL}/api/sensores/fechas?start=${startDate}&end=${endDate}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error en la respuesta de la API');
+          }
+          return response.json();
+        })
+        .then(result => {
+          if (result.success && result.data.length > 0) {
+            // Actualizar los datos globales
+            sensorData = result.data;
+            updateUI();
+          } else {
+            showNotification('No se encontraron datos para el rango seleccionado. Mostrando datos simulados.');
+            simulateSensorData();
+          }
+        })
+        .catch(error => {
+          console.error('Error al obtener datos:', error);
+          showNotification('Error al obtener datos. Usando datos simulados.');
+          simulateSensorData();
+        });
+    };
+
+    // Función para cargar los datos más recientes
+    window.loadLatestData = function() {
+      fetch(`${API_BASE_URL}/api/sensores/ultimo`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error al obtener el último registro');
+          }
+          return response.json();
+        })
+        .then(result => {
+          if (result.success) {
+            // Actualizar los valores en tiempo real
+            const data = result.data;
+
+            document.getElementById('tempValue').textContent = `${parseFloat(data.Temperatura).toFixed(1)}°C`;
+            document.getElementById('humValue').textContent = `${parseFloat(data.Humedad).toFixed(1)}%`;
+            document.getElementById('rainValue').textContent = data.EstadoLluvia || calcularLluvia(data.Lluvia);
+            document.getElementById('lightValue').textContent = data.EstadoLuz || calcularLuz(data.Luz);
+            document.getElementById('windValue').textContent = `${parseFloat(data.Viento).toFixed(1)} km/h`;
+
+            // Actualizar estado del dispositivo
+            const deviceStatus = document.getElementById('deviceStatus');
+            const deviceStatusText = document.getElementById('deviceStatusText');
+            const lastUpdate = document.getElementById('lastUpdate');
+
+            deviceStatus.className = 'status-indicator online';
+            deviceStatusText.textContent = 'Conectado - Enviando datos';
+            lastUpdate.textContent = `Actualizado ${formatTimeAgo(new Date())}`;
+
+            showNotification('Datos actualizados correctamente');
+          }
+        })
+        .catch(error => {
+          console.error('Error al obtener último registro:', error);
+          showNotification('Error al obtener datos actuales');
+
+          // Cambiar estado del dispositivo a offline
+          const deviceStatus = document.getElementById('deviceStatus');
+          const deviceStatusText = document.getElementById('deviceStatusText');
+
+          deviceStatus.className = 'status-indicator offline';
+          deviceStatusText.textContent = 'Desconectado - Error al obtener datos';
+        });
+    };
+
+    // Mejorar la función exportDataToCSV para incluir estados interpretados
+    window.exportDataToCSV = function() {
+      if (sensorData.length === 0) {
+        showNotification('No hay datos para exportar');
+        return;
+      }
+
+      let csvContent = 'data:text/csv;charset=utf-8,';
+
+      // Agregar encabezados
+      csvContent += 'Fecha,Hora,Temperatura,Humedad,Lluvia,Estado Lluvia,Luz,Estado Luz,Viento\n';
+
+      // Agregar datos
+      sensorData.forEach(record => {
+        const estadoLluvia = record.EstadoLluvia || calcularLluvia(record.Lluvia);
+        const estadoLuz = record.EstadoLuz || calcularLuz(record.Luz);
+        csvContent += `${record.Fecha},${record.Hora},${parseFloat(record.Temperatura).toFixed(1)},${parseFloat(record.Humedad).toFixed(1)},${record.Lluvia},${estadoLluvia},${record.Luz},${estadoLuz},${parseFloat(record.Viento).toFixed(1)}\n`;
+      });
+
+      // Crear el enlace para descargar
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `sensor_data_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+
+      // Descargar
+      link.click();
+
+      // Limpiar
+      document.body.removeChild(link);
+
+      showNotification('Datos exportados correctamente');
+    };
+
+    // Añadir un botón de actualización
+    const addRefreshButton = function() {
+      const refreshBtn = document.createElement('button');
+      refreshBtn.className = 'btn btn-info d-block ml-2';
+      refreshBtn.innerHTML = '<i class="fas fa-sync-alt mr-1"></i>Actualizar ahora';
+      refreshBtn.addEventListener('click', loadLatestData);
+
+      // Agregar el botón después del botón de exportar
+      const exportBtn = document.getElementById('exportDataBtn');
+      if (exportBtn && exportBtn.parentNode) {
+        exportBtn.parentNode.appendChild(refreshBtn);
+      }
+    };
+
+    // Inicializar
+    addRefreshButton();
+    loadLatestData();
+
+    // Configurar intervalo para actualizar automáticamente (cada 2 minutos)
+    setInterval(loadLatestData, 120000);
+  });
+  </script>

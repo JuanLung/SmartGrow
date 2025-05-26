@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aviso de Privacidad - SmartGrow</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <style>
+    :root {
+      --verde-agricola: #20c273;
+      --azul-tech: #0d47a1;
+      --rojo-llamativo: #e63946;
+      --naranja-energetico: #f77f00;
+    }
+
+    body {
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+      transition: background-color 0.5s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      width: 260px;
+      background-color: #0a3875;
+      height: 100vh;
+      position: fixed;
+      padding: 1rem;
+      transition: all 0.3s;
+      z-index: 1000;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      color: white;
+    }
+    .sidebar-brand {
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 1rem 0;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #135aa0;
+      text-align: center;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sidebar-nav {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar-nav li { margin-bottom: 0.5rem; }
+    .sidebar-nav a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      display: block;
+      transition: all 0.2s;
+    }
+    .sidebar-nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #23e682;
+    }
+    .sidebar-nav a.active {
+      background-color: var(--verde-agricola);
+      color: white;
+    }
+    .sidebar-footer {
+      position: absolute;
+      bottom: 0;
+      width: calc(100% - 2rem);
+      padding: 1rem 0;
+      border-top: 1px solid #135aa0;
+      color: #ffffff;
+    }
+
+    /* Logo styles */
+    .logo-img {
+      height: 40px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    
+    /* Main content */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    
+    /* Privacy policy styles */
+    .privacy-container {
+      background-color: #ffffff;
+      border-radius: 15px;
+      padding: 2rem;
+      margin: 2rem 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .privacy-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--verde-agricola);
+    }
+    
+    .privacy-header h1 {
+      color: var(--azul-tech);
+      font-weight: bold;
+    }
+    
+    .privacy-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .privacy-section h2 {
+      color: var(--verde-agricola);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    .privacy-section h2:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: var(--verde-agricola);
+    }
+    
+    .privacy-section p {
+      color: #555;
+      line-height: 1.6;
+      text-align: justify;
+    }
+    
+    .privacy-footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+    }
+    
+    .btn-back {
+      background-color: var(--azul-tech);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 30px;
+      transition: all 0.3s;
+    }
+    
+    .btn-back:hover {
+      background-color: #083275;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(13, 71, 161, 0.3);
+    }
+    
+    footer {
+      background-color: #0a3875;
+      padding: 20px 0;
+      margin-top: 30px;
+      border-top: 1px solid #135aa0;
+      color: white;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .privacy-container {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Menú lateral -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <img src="LOGO.png" alt="SmartGrow Logo" class="logo-img">
+      SMARTGROW
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="INDEX.html"><i class="fas fa-home"></i> INICIO</a></li>
+      <li><a href="INDEX.html#clima"><i class="fas fa-cloud-sun"></i> CLIMA</a></li>
+      <li><a href="INDEX.html#ia"><i class="fas fa-brain"></i> IA AGRICOLA</a></li>
+      <li><a href="INDEX.html#precios"><i class="fas fa-tags"></i> PLANES</a></li>
+      <li><a href="INDEX.html"><i class="fas fa-envelope"></i> CONTACTO</a></li>
+      <li id="panelNavItem" style="display: none;"><a href="MI PANEL.html" class="btn btn-success btn-sm mt-2"><i class="fas fa-user"></i> Mi Panel</a></li>
+      <li id="loginNavItem"><a href="INICIAR SESION.html" class="btn btn-outline-success btn-sm mt-2"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a></li>
+      <li id="loginNavItem2"><a href="registro.html" class="btn btn-outline-success btn-sm mt-2"><i class="fas fa-user-plus"></i> Registro</a></li>
+      <li id="loginNavItem3"><a href="#" class="btn btn-outline-success btn-sm mt-2 active"><i class="fas fa-shield-alt"></i> Aviso de privacidad</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <small>© 2025 SmartGrow</small>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <div class="container privacy-container">
+      <div class="privacy-header">
+        <h1><i class="fas fa-shield-alt text-primary"></i> Aviso de Privacidad</h1>
+        <p class="lead">SmartGrow se compromete a proteger su privacidad y sus datos personales</p>
+      </div>
+      
+      <div class="privacy-section">
+        <h2>1. Información General</h2>
+        <p>SmartGrow (en adelante, "nosotros", "nuestra", "nuestro" o "la Empresa"), con domicilio en Ciudad Agrícola, México, es el responsable del tratamiento de los datos personales que usted (el "Usuario") nos proporciona.</p>
+        <p>Este Aviso de Privacidad regula la recopilación, tratamiento y protección de los datos que los usuarios proporcionan a través de nuestra plataforma web y aplicación móvil, con el fin de informarle sobre la finalidad para la cual se recopilan los datos personales y las medidas de seguridad adoptadas para garantizar la protección de su información.</p>
+      </div>
+      
+      <div class="privacy-section">
+        <h2>2. Datos Personales Recopilados</h2>
+        <p>Para brindarle nuestros servicios, podemos recopilar los siguientes datos personales:</p>
+        <ul>
+          <li>Nombre completo</li>
+          <li>Correo electrónico</li>
+          <li>Número de teléfono</li>
+          <li>Dirección postal</li>
+          <li>Datos de facturación</li>
+          <li>Información sobre sus terrenos agrícolas (ubicación, tamaño, tipos de cultivo)</li>
+          <li>Datos de uso de la plataforma</li>
+        </ul>
+        <p>Adicionalmente, nuestra plataforma recopila automáticamente cierta información cuando usted utiliza nuestros servicios, como dirección IP, tipo de navegador, sistema operativo, tiempo de permanencia en el sitio y páginas visitadas.</p>
+      </div>
+      
+      <div class="privacy-section">
+        <h2>3. Finalidad del Tratamiento de Datos</h2>
+        <p>Sus datos personales serán utilizados para las siguientes finalidades:</p>
+        <ul>
+          <li>Crear y gestionar su cuenta de usuario</li>
+          <li>Proporcionar recomendaciones agrícolas personalizadas basadas en IA</li>
+          <li>Brindar información climática relevante para sus parcelas registradas</li>
+          <li>Procesar pagos y facturación</li>
+          <li>Enviar comunicaciones relacionadas con el servicio</li>
+          <li>Mejorar nuestros productos y servicios</li>
+          <li>Solucionar problemas técnicos</li>
+          <li>Enviar comunicaciones promocionales (con previo consentimiento)</li>
+          <li>Cumplir con obligaciones legales</li>
+        </ul>
+      </div>
+      
+      <div class="privacy-section">
+        <h2>4. Tecnologías de Seguimiento</h2>
+        <p>Utilizamos cookies y tecnologías similares para mejorar su experiencia de usuario, analizar el uso de nuestro sitio y personalizar el contenido. Las cookies son pequeños archivos de texto que se almacenan en su dispositivo cuando visita nuestro sitio web.</p>
+        <p>Tipos de cookies que utilizamos:</p>
+        <ul>
+          <li><strong>Cookies esenciales:</strong> necesarias para el funcionamiento básico del sitio.</li>
+          <li><strong>Cookies de rendimiento:</strong> nos ayudan a entender cómo interactúan los usuarios con nuestro sitio.</li>
+          <li><strong>Cookies de funcionalidad:</strong> permiten recordar sus preferencias y proporcionar funciones mejoradas.</li>
+          <li><strong>Cookies de publicidad:</strong> utilizadas para mostrar anuncios relevantes (solo con su consentimiento).</li>
+        </ul>
+        <p>Usted puede configurar su navegador para rechazar todas o algunas cookies, o para alertarle cuando los sitios web establecen o acceden a las cookies. Sin embargo, si desactiva o rechaza las cookies, algunas partes de nuestro sitio pueden volverse inaccesibles o no funcionar correctamente.</p>
+      </div>
+      
+      <div class="privacy-section">
+        <h2>5. Transferencia de Datos</h2>
+        <p>SmartGrow no venderá, cederá ni distribuirá sus datos personales sin su consentimiento, salvo que sea requerido por un juez con una orden judicial.</p>
+        <p>No obstante, para poder brindarle nuestros servicios, podemos compartir su información con:</p>
+        <ul>
+          <li>Proveedores de servicios que nos ayudan a operar nuestra plataforma</li>
+          <li>Servicios de procesamiento de pagos</li>
+          <li>Proveedores de datos climáticos y agrícolas</li>
+          <li>Autoridades gubernamentales cuando sea requerido por ley</li>
+        </ul>
+        <p>Todos nuestros proveedores de servicios están obligados a proteger sus datos personales de acuerdo con nuestras políticas y la legislación aplicable.</p>
+      </div>
+      
+      <div class="privacy-section">
+        <h2>6. Seguridad de los Datos</h2>
+        <p>Implementamos medidas de seguridad técnicas, administrativas y físicas para proteger sus datos personales contra acceso no autorizado, alteración, divulgación o destrucción. Estas medidas incluyen:</p>
+        <ul>
+          <li>Encriptación de datos sensibles</li>
+          <li>Protocolos de seguridad SSL/TLS</li>
+          <li>Acceso restringido a la información personal</li>
+          <li>Monitoreo regular de nuestros sistemas</li>
+          <li>Copias de seguridad periódicas</li>
+        </ul>
+        <p>Sin embargo, ninguna transmisión de datos por Internet o sistema de almacenamiento puede garantizarse como 100% seguro. Si tiene razones para creer que su interacción con nosotros ya no es segura, notifíquenos inmediatamente.</p>
+      </div>
+      
+      <div class="privacy-section">
+        <h2>7. Sus Derechos ARCO</h2>
+        <p>De conformidad con la legislación aplicable, usted tiene derecho a:</p>
+        <ul>
+          <li><strong>Acceder</strong> a sus datos personales</li>
+          <li><strong>Rectificar</strong> sus datos cuando sean inexactos o incompletos</li>
+          <li><strong>Cancelar</strong> sus datos cuando considere que no son necesarios para las finalidades señaladas</li>
+          <li><strong>Oponerse</strong> al tratamiento de sus datos para fines específicos</li>
+          <li><strong>Limitar</strong> el uso o divulgación de sus datos personales</li>
+          <li><strong>Revocar</strong> su consentimiento en cualquier momento</li>
+        </ul>
+        <p>Para ejercer estos derechos, envíe un correo electrónico a privacidad@smartgrow.mx especificando claramente su solicitud. Responderemos a su solicitud en un plazo máximo de 20 días hábiles.</p>
+      </div>
+      
+      <div class="privacy-section">
+        <h2>8. Conservación de Datos</h2>
+        <p>Conservaremos sus datos personales durante el tiempo necesario para cumplir con los fines para los que se recopilaron, incluido el cumplimiento de requisitos legales, contables o de presentación de informes.</p>
+        <p>Una vez que su cuenta sea cancelada, mantendremos sus datos por un período adicional de hasta 5 años para cumplir con obligaciones legales, resolver disputas y hacer cumplir nuestros acuerdos.</p>
+      </div>
+      
+      <div class="privacy-section">
+        <h2>9. Menores de Edad</h2>
+        <p>Nuestros servicios no están dirigidos a menores de 18 años. No recopilamos intencionalmente información personal de menores de edad. Si descubrimos que hemos recopilado datos personales de un menor de 18 años sin verificación del consentimiento parental, tomaremos medidas para eliminar esa información de nuestros servidores.</p>
+      </div>
+      
+      <div class="privacy-section">
+        <h2>10. Cambios al Aviso de Privacidad</h2>
+        <p>Nos reservamos el derecho de modificar o actualizar este Aviso de Privacidad en cualquier momento. La versión actualizada estará disponible en nuestro sitio web con la fecha de la última revisión. Le recomendamos revisar periódicamente este Aviso para estar informado sobre cómo protegemos su información.</p>
+        <p>Si realizamos cambios materiales en la forma en que tratamos sus datos personales, se lo notificaremos mediante un aviso destacado en nuestro sitio web o por correo electrónico.</p>
+      </div>
+      
+      <div class="privacy-footer">
+        <p>Última actualización: 09 de mayo de 2025</p>
+        <p>Si tiene alguna pregunta sobre este Aviso de Privacidad, contáctenos a: <a href="mailto:privacidad@smartgrow.mx">privacidad@smartgrow.mx</a></p>
+        <a href="INDEX.html" class="btn btn-back mt-3"><i class="fas fa-arrow-left"></i> Volver a la página principal</a>
+      </div>
+    </div>
+    
+    <!-- FOOTER -->
+    <footer class="text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <h5><img src="LOGO.png" alt="SmartGrow Logo" style="height: 30px; margin-right: 10px;"> SmartGrow</h5>
+            <p>Agricultura inteligente basada en datos para mejorar tus cultivos.</p>
+          </div>
+          <div class="col-md-4">
+            <h5>Enlaces rápidos</h5>
+            <ul class="list-unstyled">
+              <li><a href="INDEX.html#clima"><i class="fas fa-cloud-sun"></i> Clima en tiempo real</a></li>
+              <li><a href="INDEX.html#ia"><i class="fas fa-brain"></i> IA agrícola</a></li>
+              <li><a href="INDEX.html#precios"><i class="fas fa-tags"></i> Planes</a></li>
+              <li><a href="INDEX.html#contact"><i class="fas fa-envelope"></i> Contacto</a></li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h5>Síguenos</h5>
+            <p>
+              <a href="#" class="btn btn-outline-light btn-sm mr-2"><i class="fab fa-facebook-f"></i> Facebook</a>
+              <a href="#" class="btn btn-outline-light btn-sm mr-2"><i class="fab fa-twitter"></i> Twitter</a>
+              <a href="#" class="btn btn-outline-light btn-sm"><i class="fab fa-instagram"></i> Instagram</a>
+            </p>
+          </div>
+        </div>
+        <p class="mb-0">© 2025 SmartGrow - Agricultura con Inteligencia</p>
+      </div>
+    </footer>
+  </div>
+  
+  <!-- Notification -->
+  <div id="notification" class="notification" style="position: fixed; bottom: 20px; right: 20px; background-color: #20c273; color: white; padding: 15px 25px; border-radius: 50px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1000; display: none;">
+    <i class="fas fa-bell mr-2"></i> <span id="notification-text">Notificación</span>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Verificar si hay un usuario activo
+      const usuarioActivo = localStorage.getItem("usuarioActivo");
+      if (usuarioActivo) {
+        document.getElementById("loginNavItem").style.display = "none";
+        document.getElementById("panelNavItem").style.display = "block";
+      }
+      
+      // Función para mostrar notificaciones
+      function showNotification(message) {
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+        notificationText.textContent = message;
+        notification.style.display = 'block';
+        
+        // Reset animation
+        notification.style.animation = 'none';
+        void notification.offsetWidth;
+        notification.style.animation = 'slideIn 0.5s forwards, fadeOut 0.5s forwards 2.5s';
+        
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 3000);
+      }
+      
+      // Animaciones para slideIn y fadeOut
+      if (!document.querySelector('style').textContent.includes('@keyframes slideIn')) {
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = `
+          @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+          }
+          @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+          }
+        `;
+        document.head.appendChild(styleSheet);
+      }
+      
+      // Mostrar notificación al cargar la página
+      setTimeout(() => {
+        showNotification('Aviso de Privacidad cargado correctamente');
+      }, 1000);
+    });
+  </script>
+
+  <!-- Scripts de Bootstrap -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartGrow</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --verde-agricola: #20c273;
+      --azul-tech: #0d47a1;
+      --rojo-llamativo: #e63946;
+      --naranja-energetico: #f77f00;
+    }
+
+    body {
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+      transition: background-color 0.5s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Estilos de color para las secciones */
+    .section-white { background-color: white; }
+    .section-green {
+      background-color: #f1faee;
+      background: linear-gradient(to bottom, #f1faee, #a8dadc);
+    }
+    .section-blue {
+      background-color: #e9f5ff;
+      background: linear-gradient(to bottom, #e9f5ff, #a8c6ff);
+    }
+    .section-red {
+      background-color: #ffebee;
+      background: linear-gradient(to bottom, #ffebee, #ffcdd2);
+    }
+    .section-orange {
+      background-color: #fff3e0;
+      background: linear-gradient(to bottom, #fff3e0, #ffe0b2);
+    }
+
+    /* Logo styles */
+    .logo-img {
+      height: 40px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    .hero-logo {
+      height: 200px;
+      margin-bottom: 15px;
+      transition: transform 0.5s ease;
+      /* Eliminado completamente el box-shadow también */
+    }
+    .hero-logo:hover { transform: rotate(5deg) scale(1.05); }
+    .footer-logo {
+      height: 30px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    /* Menú lateral */
+    .sidebar {
+      width: 260px;
+      background-color: #0a3875;
+      height: 100vh;
+      position: fixed;
+      padding: 1rem;
+      transition: all 0.3s;
+      z-index: 1000;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      color: white;
+    }
+    .sidebar-brand {
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 1rem 0;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #135aa0;
+      text-align: center;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sidebar-nav {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar-nav li { margin-bottom: 0.5rem; }
+    .sidebar-nav a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      display: block;
+      transition: all 0.2s;
+    }
+    .sidebar-nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #23e682;
+    }
+    .sidebar-nav a.active {
+      background-color: var(--verde-agricola);
+      color: white;
+    }
+    .sidebar-footer {
+      position: absolute;
+      bottom: 0;
+      width: calc(100% - 2rem);
+      padding: 1rem 0;
+      border-top: 1px solid #135aa0;
+      color: #ffffff;
+    }
+
+    /* Contenido principal */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 20px;
+    }
+    .hero {
+      background: linear-gradient(135deg, rgba(13, 71, 161, 0.8), rgba(32, 194, 115, 0.8)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem;
+      color: white;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      align-items: center;
+      transition: all 0.5s ease;
+      position: relative;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      color: white;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .feature {
+      background-color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border: 2px solid transparent;
+    }
+    .feature:hover {
+      transform: scale(1.03) translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border-left: 3px solid var(--verde-agricola);
+    }
+    .feature h4 i { color: var(--verde-agricola); }
+
+    .section-detail {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .section-detail:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    .section-detail h2 {
+      color: var(--verde-agricola);
+      position: relative;
+      padding-bottom: 10px;
+    }
+    .section-detail h2:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: var(--verde-agricola);
+    }
+    .section-detail h2 i { color: var(--azul-tech); }
+    .section-detail p { color: #555; }
+
+    /* Estilos para el mapa */
+    #map {
+      height: 500px;
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      z-index: 1;
+    }
+    #map:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+
+    /* Estilos para la información del área */
+    .info-area {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      border-left: 4px solid var(--verde-agricola);
+    }
+    .info-area h5 {
+      color: var(--azul-tech);
+      margin-bottom: 15px;
+    }
+    .info-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .info-item i {
+      width: 30px;
+      color: var(--verde-agricola);
+      font-size: 1.2rem;
+    }
+    .info-item span { flex: 1; }
+
+    /* Estilos para el análisis agrícola */
+    .analisis-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .analisis-item {
+      flex: 1;
+      min-width: 200px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+    .analisis-item h6 {
+      color: var(--azul-tech);
+      margin-bottom: 10px;
+    }
+    .analisis-valor {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--verde-agricola);
+    }
+    .analisis-barra {
+      height: 8px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .analisis-progreso {
+      height: 100%;
+      background-color: var(--verde-agricola);
+      border-radius: 4px;
+    }
+
+    .contact-info { margin-bottom: 20px; }
+    .contact-info p { margin-bottom: 10px; }
+    .contact-info i {
+      color: var(--azul-tech);
+      margin-right: 10px;
+    }
+
+    footer {
+      background-color: #0a3875;
+      padding: 20px 0;
+      margin-top: 30px;
+      border-top: 1px solid #135aa0;
+      color: white;
+    }
+    footer h5 {
+      color: white;
+      position: relative;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    footer h5:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background: #23e682;
+    }
+    footer h5 i { color: #23e682; }
+    footer a {
+      color: #ccc;
+      transition: color 0.2s;
+    }
+    footer a:hover {
+      color: #23e682;
+      text-decoration: none;
+    }
+
+    /* Botones */
+    .btn-success {
+      background-color: var(--verde-agricola);
+      border-color: var(--verde-agricola);
+      transition: all 0.3s;
+    }
+    .btn-success:hover {
+      background-color: #19a35f;
+      border-color: #19a35f;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(32, 194, 115, 0.3);
+    }
+    .btn-outline-success {
+      color: var(--verde-agricola);
+      border-color: var(--verde-agricola);
+      transition: all 0.3s;
+    }
+    .btn-outline-success:hover {
+      background-color: var(--verde-agricola);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(32, 194, 115, 0.3);
+    }
+    .btn-primary {
+      background-color: var(--azul-tech);
+      border-color: var(--azul-tech);
+      transition: all 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0a3367;
+      border-color: #0a3367;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(13, 71, 161, 0.3);
+    }
+    .btn-outline-primary {
+      color: var(--azul-tech);
+      border-color: var(--azul-tech);
+      transition: all 0.3s;
+    }
+    .btn-outline-primary:hover {
+      background-color: var(--azul-tech);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(13, 71, 161, 0.3);
+    }
+    .btn-warning { transition: all 0.3s; }
+    .btn-warning:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(247, 127, 0, 0.3);
+    }
+
+    /* Efectos especiales */
+    .floating { animation: floating 3s ease-in-out infinite; }
+    @keyframes floating {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      .main-content { margin-left: 0; }
+      .hero {
+        height: auto;
+        padding: 2rem 1rem;
+      }
+      .hero h1 { font-size: 2rem; }
+      .hero-logo { height: 150px; }
+      .analisis-item { min-width: 100%; }
+      #map { height: 350px; }
+    }
+
+    /* Notificación flotante */
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: var(--verde-agricola);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 50px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+      animation: slideIn 0.5s forwards, fadeOut 0.5s forwards 2.5s;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    /* Animaciones */
+    .fade-in { animation: fadeIn 1s ease-in; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Efecto de onda */
+    .wave {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+      transform: rotate(180deg);
+    }
+    .wave svg {
+      position: relative;
+      display: block;
+      width: calc(100% + 1.3px);
+      height: 150px;
+    }
+    .wave .shape-fill { fill: #FFFFFF; }
+
+    /* Mejoras para la sección de IA */
+    .ia-recomendacion {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+      border-left: 4px solid var(--azul-tech);
+      transition: all 0.3s ease;
+    }
+    .ia-recomendacion h6 {
+      color: var(--azul-tech);
+      margin-bottom: 10px;
+    }
+    .ia-recomendacion p { color: #555; }
+
+    /* Mejoras para el mapa */
+    .map-container { position: relative; }
+    .map-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- Menú lateral -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <img src="LOGO.png" alt="SmartGrow Logo" class="logo-img">
+      SMARTGROW
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="#hero"><i class="fas fa-home"></i> INICIO</a></li>
+      <li><a href="#clima"><i class="fas fa-cloud-sun"></i> CLIMA</a></li>
+      <li><a href="#ia"><i class="fas fa-brain"></i> IA AGRICOLA</a></li>
+      <li><a href="#precios"><i class="fas fa-tags"></i> PLANES</a></li>
+      <li><a href="#contact"><i class="fas fa-envelope"></i> CONTACTO</a></li>
+      <li id="panelNavItem" style="display: none;"><a href="MI PANEL.html" class="btn btn-success btn-sm mt-2"><i class="fas fa-user"></i> Mi Panel</a></li>
+      <li id="loginNavItem"><a href="INICIAR SESION.html" class="btn btn-outline-success btn-sm mt-2"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</a></li>
+      <li id="loginNavItem2"><a href="registro.html" class="btn btn-outline-success btn-sm mt-2"><i class="fas fa-user-plus"></i> Registro</a></li>
+      <li id="loginNavItem3"><a href="INICIAR SESION.html" class="btn btn-outline-success btn-sm mt-2"><i class="fas fa-sign-in-alt"></i> Aviso de privacidad</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <small>© 2025 SmartGrow</small>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <!-- HERO -->
+    <div class="hero text-center" id="hero">
+      <img src="LOGO.png" alt="SmartGrow Logo" class="hero-logo floating">
+      <h1 class="mb-3">SMARTGROW</h1>
+      <p class="lead mb-4">Agricultura inteligente basada en clima y datos en tiempo real.</p>
+      <a href="registro.html" class="btn btn-success btn-lg mt-3 pulse">Empieza Gratis</a>
+      <div class="wave">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- BOTONES DE FUNCIONALIDADES -->
+    <div class="container my-5 features-section section-white">
+      <h2 class="text-center mb-5 fade-in"><i class="fas fa-star"></i> Nuestras Soluciones</h2>
+      <div class="row text-center">
+        <div class="col-md-4 mb-4 fade-in" style="animation-delay: 0.2s;">
+          <div class="feature" onclick="location.href='#clima';">
+            <h4><i class="fas fa-cloud-sun"></i> Clima en tiempo real</h4>
+            <p>Datos actualizados para sembrar en el momento perfecto.</p>
+            <div class="text-center mt-3">
+              <i class="fas fa-arrow-down text-primary" style="font-size: 1.5rem;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4 fade-in" style="animation-delay: 0.4s;">
+          <div class="feature" onclick="location.href='#ia';">
+            <h4><i class="fas fa-brain"></i> IA agrícola</h4>
+            <p>Recomendaciones inteligentes para mejorar tu cosecha.</p>
+            <div class="text-center mt-3">
+              <i class="fas fa-arrow-down text-primary" style="font-size: 1.5rem;"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4 fade-in" style="animation-delay: 0.6s;">
+          <div class="feature" onclick="location.href='#mapa';">
+            <h4><i class="fas fa-map-marked-alt"></i> Mapa interactivo</h4>
+            <p>Ubica tu terreno y visualiza condiciones ideales.</p>
+            <div class="text-center mt-3">
+              <i class="fas fa-arrow-down text-primary" style="font-size: 1.5rem;"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETALLES: CLIMA -->
+    <div class="container-fluid py-5 section-green">
+      <div class="container section-detail" id="clima">
+        <h2><i class="fas fa-cloud-sun"></i> Clima en Tiempo Real</h2>
+        <p>SmartGrow conecta con fuentes meteorológicas confiables para brindarte actualizaciones en tiempo real.
+          Así puedes tomar decisiones sobre siembra, riego y fumigación con base en condiciones climáticas precisas.</p>
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <div class="chart-container">
+              <canvas id="climaChart"></canvas>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card mb-3">
+              <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-chart-line text-primary"></i> Datos climáticos en tiempo real</h5>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item"><i class="fas fa-temperature-high text-danger"></i> Temperatura actual: <span id="temp-actual">24°C</span></li>
+                  <li class="list-group-item"><i class="fas fa-tint text-info"></i> Humedad: <span id="humedad-actual">65%</span></li>
+                  <li class="list-group-item"><i class="fas fa-wind text-success"></i> Velocidad del viento: <span id="viento-actual">12 km/h</span></li>
+                  <li class="list-group-item"><i class="fas fa-cloud-rain text-primary"></i> Precipitación: <span id="lluvia-actual">0 mm</span></li>
+                </ul>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="simularCambioClima()">Simular Cambio Climático</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETALLES: IA AGRÍCOLA -->
+    <div class="container-fluid py-5 section-blue">
+      <div class="container section-detail" id="ia">
+        <h2><i class="fas fa-brain"></i> IA Agrícola Inteligente</h2>
+        <p>Nuestro sistema de inteligencia artificial avanzada analiza múltiples variables para ofrecerte
+           recomendaciones personalizadas con una precisión del 92%. Optimiza tus recursos y maximiza tu producción.</p>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="analisis-container">
+              <div class="analisis-item">
+                <h6>Rendimiento Estimado</h6>
+                <div class="analisis-valor" id="rendimiento-valor">78%</div>
+                <div class="analisis-barra">
+                  <div class="analisis-progreso" id="rendimiento-barra" style="width: 78%"></div>
+                </div>
+              </div>
+              <div class="analisis-item">
+                <h6>Eficiencia Hídrica</h6>
+                <div class="analisis-valor" id="eficiencia-valor">85%</div>
+                <div class="analisis-barra">
+                  <div class="analisis-progreso" id="eficiencia-barra" style="width: 85%"></div>
+                </div>
+              </div>
+              <div class="ia-recomendacion mt-3">
+                <h6><i class="fas fa-robot text-primary"></i> Recomendación:</h6>
+                <p id="texto-recomendacion">El arroz requiere suelos con alta retención de agua. Monitoree niveles de inundación.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-lightbulb text-warning"></i> Asistente Agrícola Inteligente</h5>
+                <div class="form-group">
+                  <label for="tipo-cultivo"><i class="fas fa-seedling"></i> Tipo de cultivo:</label>
+                  <select class="form-control" id="tipo-cultivo">
+                    <option>Maíz</option>
+                    <option>Trigo</option>
+                    <option>Soja</option>
+                    <option>Arroz</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="tipo-suelo"><i class="fas fa-mountain"></i> Tipo de suelo:</label>
+                  <select class="form-control" id="tipo-suelo">
+                    <option>Arcilloso</option>
+                    <option>Arenoso</option>
+                    <option>Limoso</option>
+                    <option>Franco</option>
+                  </select>
+                </div>
+                <button class="btn btn-success btn-block" onclick="generarRecomendacion()">
+                  <i class="fas fa-robot"></i> Obtener Recomendación
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETALLES: MAPA INTERACTIVO -->
+    <div class="container-fluid py-5 section-red">
+      <div class="container section-detail" id="mapa">
+        <h2><i class="fas fa-map-marked-alt"></i> Mapa Agrícola</h2>
+        <p>Nuestro mapa interactivo te permite visualizar parcelas de agricultores locales con datos actualizados de clima y cultivos.</p>
+        <div class="map-container">
+          <div id="map"></div>
+          <div class="map-controls">
+            <button class="btn btn-sm btn-primary mb-1" onclick="cambiarUbicacionAleatoria()">
+              <i class="fas fa-random"></i> Cambiar Ubicación y Forma
+            </button>
+          </div>
+        </div>
+        <div class="info-area">
+          <h5><i class="fas fa-info-circle"></i> Información del área seleccionada</h5>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Ubicación: <strong id="info-ubicacion">19.3455, -99.3345</strong></span>
+              </div>
+              <div class="info-item">
+                <i class="fas fa-cloud-rain"></i>
+                <span>Clima actual: <strong id="info-clima">lluvioso</strong></span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-item">
+                <i class="fas fa-seedling"></i>
+                <span>Cultivo recomendado: <strong id="info-cultivo">Maíz</strong></span>
+              </div>
+              <div class="info-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Época de siembra: <strong id="info-siembra">Mayo-Junio</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN DE PRECIOS / SUSCRIPCIÓN -->
+    <div class="container-fluid py-5 section-orange">
+      <div class="container my-5" id="precios">
+        <h2 class="text-center mb-4"><i class="fas fa-tags"></i> Planes de Suscripción</h2>
+        <div class="row">
+          <!-- Plan Gratis -->
+          <div class="col-md-4 mb-4">
+            <div class="card border-success h-100">
+              <div class="card-body text-center">
+                <h4 class="card-title"><i class="fas fa-seedling"></i> Gratis</h4>
+                <h2 class="card-price"> $0 <small>/mes</small></h2>
+                <ul class="list-unstyled mt-3 mb-4">
+                  <li><i class="fas fa-check text-success"></i> Clima en tiempo real</li>
+                  <li><i class="fas fa-check text-success"></i> Acceso al mapa básico</li>
+                  <li><i class="fas fa-times text-danger"></i> Recomendaciones de IA</li>
+                </ul>
+                <a href="registro.html" class="btn btn-outline-success">Comenzar</a>
+              </div>
+            </div>
+          </div>
+          <!-- Plan Básico -->
+          <div class="col-md-4 mb-4">
+            <div class="card border-primary h-100">
+              <div class="card-body text-center">
+                <h4 class="card-title"><i class="fas fa-leaf"></i> Básico</h4>
+                <h2 class="card-price"> $49 <small>/mes</small></h2>
+                <ul class="list-unstyled mt-3 mb-4">
+                  <li><i class="fas fa-check text-success"></i> Clima en tiempo real</li>
+                  <li><i class="fas fa-check text-success"></i> Mapa interactivo completo</li>
+                  <li><i class="fas fa-check text-success"></i> IA con recomendaciones básicas</li>
+                </ul>
+                <a href="registro.html" class="btn btn-outline-primary">Suscribirse</a>
+              </div>
+            </div>
+          </div>
+          <!-- Plan Pro -->
+          <div class="col-md-4 mb-4">
+            <div class="card border-warning h-100">
+              <div class="card-header bg-warning text-white">
+                <h5 class="mb-0"><i class="fas fa-crown"></i> Más Popular</h5>
+              </div>
+              <div class="card-body text-center">
+                <h4 class="card-title"><i class="fas fa-rocket"></i> Pro</h4>
+                <h2 class="card-price"> $99 <small>/mes</small></h2>
+                <ul class="list-unstyled mt-3 mb-4">
+                  <li><i class="fas fa-check text-success"></i> Todo lo del plan Básico</li>
+                  <li><i class="fas fa-check text-success"></i> IA avanzada sin límites</li>
+                  <li><i class="fas fa-check text-success"></i> Soporte prioritario 24/7</li>
+                </ul>
+                <a href="registro.html" class="btn btn-warning text-white">Empezar Pro</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACTO -->
+    <div id="contact" class="container-fluid py-5 section-white">
+      <div class="container section-detail">
+        <h2 class="text-center mb-4"><i class="fas fa-envelope"></i> Contacto</h2>
+        <div class="row">
+          <div class="col-md-5 contact-info">
+            <p><i class="fas fa-map-marker-alt"></i> Ciudad Agrícola, México</p>
+            <p><i class="fas fa-phone"></i> +52 555 123 4567</p>
+            <p><i class="fas fa-envelope"></i> info@smartgrow.mx</p>
+          </div>
+          <div class="col-md-7">
+            <form id="contactForm">
+              <div class="row">
+                <div class="col-md-6 form-group">
+                  <input class="form-control" id="name" name="name" placeholder="Nombre" type="text" required>
+                </div>
+                <div class="col-md-6 form-group">
+                  <input class="form-control" id="email" name="email" placeholder="Correo electrónico" type="email" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <input class="form-control" id="subject" name="subject" placeholder="Asunto" type="text" required>
+              </div>
+              <div class="form-group">
+                <textarea class="form-control" id="message" name="message" placeholder="Mensaje" rows="5" required></textarea>
+              </div>
+              <button class="btn btn-success btn-block" type="submit">Enviar Mensaje</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <h5><img src="https://via.placeholder.com/30x30?text=SG" alt="SmartGrow Logo" class="footer-logo"> SmartGrow</h5>
+            <p>Agricultura inteligente basada en datos para mejorar tus cultivos.</p>
+          </div>
+          <div class="col-md-4">
+            <h5>Enlaces rápidos</h5>
+            <ul class="list-unstyled">
+              <li><a href="#clima"><i class="fas fa-cloud-sun"></i> Clima en tiempo real</a></li>
+              <li><a href="#ia"><i class="fas fa-brain"></i> IA agrícola</a></li>
+              <li><a href="#precios"><i class="fas fa-tags"></i> Planes</a></li>
+              <li><a href="#contact"><i class="fas fa-envelope"></i> Contacto</a></li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h5>Síguenos</h5>
+            <p>
+              <a href="#" class="btn btn-outline-light btn-sm mr-2"><i class="fab fa-facebook-f"></i> Facebook</a>
+              <a href="#" class="btn btn-outline-light btn-sm mr-2"><i class="fab fa-twitter"></i> Twitter</a>
+              <a href="#" class="btn btn-outline-light btn-sm"><i class="fab fa-instagram"></i> Instagram</a>
+            </p>
+          </div>
+        </div>
+        <p class="mb-0">© 2025 SmartGrow - Agricultura con Inteligencia</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Notificación flotante -->
+  <div id="notification" class="notification">
+    <i class="fas fa-bell mr-2"></i> <span id="notification-text">¡Bienvenido a SmartGrow!</span>
+  </div>
+
+  <script>
+    // Variables globales
+    let map;
+    let marker;
+    let areaShape; // Reemplaza la variable circle para manejar diferentes formas
+    let currentShapeType = 'circle'; // Guardar el tipo de forma actual
+    let climaChart;
+
+    // Inicializar mapa
+    function initMap() {
+      map = L.map('map', {
+        center: [19.4326, -99.1332],
+        zoom: 13
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(map);
+
+      marker = L.marker([19.4326, -99.1332], {
+        draggable: true
+      }).addTo(map)
+        .bindPopup('Ubicación actual<br>Arrastra el marcador para cambiar la ubicación')
+        .openPopup();
+
+      marker.on('dragend', function(e) {
+        const newPos = marker.getLatLng();
+        actualizarInfoMapa(newPos.lat, newPos.lng);
+        actualizarForma(newPos.lat, newPos.lng);
+      });
+
+      // Iniciar con un círculo
+      crearForma('circle', [19.4326, -99.1332]);
+
+      actualizarInfoMapa(19.4326, -99.1332);
+    }
+
+    // Actualizar información del área en el mapa
+    function actualizarInfoMapa(lat, lng) {
+      // Nombres de agricultores y sus parcelas de temporal
+      const nombresAgricultores = [
+        "Don Anselmo Ramírez", "Doña Josefina Méndez", "Don Patricio Hernández", "Don Eulogio Martínez",
+        "Familia Torres", "Don Clemente Juárez", "Doña Guadalupe Ortiz", "Don Ernesto Vázquez",
+        "Hermanos Gallardo", "Don Macario López", "Familia Reyes", "Don Crescencio Sánchez",
+        "Doña Herminia Velasco", "Don Eustaquio Nuñez", "Familia Calderón", "Don Jerónimo Álvarez"
+      ];
+
+      const nombresTerrenos = [
+        "El Pedregoso", "Las Espinas", "Loma Seca", "El Terregoso",
+        "La Mesa Grande", "Cerro Pelón", "El Cimatario", "Loma de la Cruz",
+        "Las Peñitas", "La Cantera", "El Breñal", "Cerro del Aire",
+        "Llano Largo", "El Mezquital", "Los Tepetates", "Loma del Venado"
+      ];
+
+      const cultivosSecano = [
+        "maíz de temporal", "frijol de secano", "nopal verdulero", "maguey pulquero",
+        "tuna roja", "pitaya", "agave mezcalero", "mezquite",
+        "chile criollo", "calabaza de cáscara", "girasol", "avena forrajera",
+        "sorgo escobero", "cebada", "trigo duro", "amaranto"
+      ];
+
+      const climasSecos = [
+        "seco", "soleado", "árido", "con viento",
+        "polvoriento", "cálido", "despejado", "sin humedad"
+      ];
+
+      const siembraTemporal = [
+        "cuando lleguen las primeras lluvias", "antes de la temporada de calor",
+        "en luna nueva", "a inicios de temporal", "a inicios de junio",
+        "según la humedad residual", "en ciclo temprano", "tras preparar bien el suelo"
+      ];
+
+      // Seleccionar valores para parcelas de temporal
+      const indiceAgricultor = Math.abs(Math.floor((lat * lng * 100) % nombresAgricultores.length));
+      const indiceTerreno = Math.abs(Math.floor((lat + lng * 50) % nombresTerrenos.length));
+      const indiceCultivo = Math.abs(Math.floor((lat - lng * 50) % cultivosSecano.length));
+      const indiceClima = Math.abs(Math.floor((lat - lng * 20) % climasSecos.length));
+      const indiceSiembra = Math.abs(Math.floor((lat * 2 + lng) % siembraTemporal.length));
+
+      const agricultor = nombresAgricultores[indiceAgricultor];
+      const terreno = nombresTerrenos[indiceTerreno];
+      const cultivoRecomendado = cultivosSecano[indiceCultivo];
+      const climaActual = climasSecos[indiceClima];
+      const siembraActual = siembraTemporal[indiceSiembra];
+
+      // Actualizar información en el panel
+      document.getElementById('info-ubicacion').textContent = `${terreno} - Propiedad de ${agricultor}`;
+      document.getElementById('info-clima').textContent = climaActual;
+      document.getElementById('info-cultivo').textContent = cultivoRecomendado;
+      document.getElementById('info-siembra').textContent = siembraActual;
+
+      // Actualizar el marcador con información del propietario y su parcela
+      marker.bindPopup(`<strong>${terreno}</strong><br>Propiedad de: ${agricultor}<br>Cultivo actual: ${cultivoRecomendado}`).openPopup();
+    }
+
+    // Crear forma geométrica
+    function crearForma(tipo, coordenadas) {
+      // Si ya existe una forma, removerla primero
+      if (areaShape) {
+        map.removeLayer(areaShape);
+      }
+
+      const lat = coordenadas[0];
+      const lng = coordenadas[1];
+
+      // Crear forma según el tipo - con tamaños más pequeños
+      switch (tipo) {
+        case 'circle':
+          areaShape = L.circle([lat, lng], {
+            color: '#3388ff',
+            fillColor: '#3388ff',
+            fillOpacity: 0.2,
+            // Radio reducido a 1 km (antes 5 km)
+            radius: 1000
+          }).addTo(map);
+          break;
+
+        case 'square':
+          // Crear un cuadrado usando polygon - tamaño reducido
+          const squarePoints = [
+            [lat + 0.009, lng - 0.009],
+            [lat + 0.009, lng + 0.009],
+            [lat - 0.009, lng + 0.009],
+            [lat - 0.009, lng - 0.009]
+          ];
+          areaShape = L.polygon(squarePoints, {
+            color: '#FF5733',
+            fillColor: '#FF5733',
+            fillOpacity: 0.2
+          }).addTo(map);
+          break;
+
+        case 'pentagon':
+          // Crear un pentágono - tamaño reducido
+          const pentagonPoints = [];
+          // Radio reducido de 0.045 a 0.01
+          const pentagonRadius = 0.01;
+          for (let i = 0; i < 5; i++) {
+            const angle = (2 * Math.PI * i / 5) - (Math.PI / 2);
+            pentagonPoints.push([
+              lat + pentagonRadius * Math.cos(angle),
+              lng + pentagonRadius * Math.sin(angle) * 1.5
+            ]);
+          }
+          areaShape = L.polygon(pentagonPoints, {
+            color: '#33FF57',
+            fillColor: '#33FF57',
+            fillOpacity: 0.2
+          }).addTo(map);
+          break;
+
+        case 'hexagon':
+          // Crear un hexágono - tamaño reducido
+          const hexagonPoints = [];
+          // Radio reducido de 0.045 a 0.01
+          const hexagonRadius = 0.01;
+          for (let i = 0; i < 6; i++) {
+            const angle = (2 * Math.PI * i / 6) - (Math.PI / 2);
+            hexagonPoints.push([
+              lat + hexagonRadius * Math.cos(angle),
+              lng + hexagonRadius * Math.sin(angle) * 1.5
+            ]);
+          }
+          areaShape = L.polygon(hexagonPoints, {
+            color: '#3357FF',
+            fillColor: '#3357FF',
+            fillOpacity: 0.2
+          }).addTo(map);
+          break;
+      }
+
+      currentShapeType = tipo;
+    }
+
+    // Actualizar forma en la posición actual
+    function actualizarForma(lat, lng) {
+      crearForma(currentShapeType, [lat, lng]);
+    }
+
+    // Cambiar a ubicación aleatoria y cambiar forma
+    function cambiarUbicacionAleatoria() {
+      // Coordenadas base para zonas agrícolas secas y remotas, lejos de carreteras y cuerpos de agua
+      const zonasBases = [
+        [20.793, -103.952], // Tierras áridas al oeste de Tala, Jalisco, lejos de presas
+        [19.518, -98.785],  // Lomeríos secos al norte de Texcoco, sin ríos cercanos
+        [18.542, -99.562],  // Zonas de temporal en Morelos, sin sistemas de riego
+        [22.483, -102.746], // Planicie seca de Zacatecas, alejada de vías principales
+        [16.887, -92.853],  // Lomeríos altos de Chiapas, sin agua cercana
+        [26.127, -103.713], // Zona desértica de Coahuila, completamente seca
+        [29.485, -110.772], // Planicie semidesértica de Sonora, sin arroyos
+        [21.733, -104.853], // Tierras altas secas de Nayarit, sin cuencas
+        [28.635, -107.453], // Planicies altas de Chihuahua, lejos de ríos
+        [24.375, -99.637],  // Tierras secas de Tamaulipas, sin irrigación
+        [18.162, -96.315],  // Lomeríos áridos de Oaxaca, sin cuerpos de agua
+        [20.273, -100.687], // Planicie seca de Michoacán, alejada de lagos
+        [20.825, -100.447], // Zona semiárida de Querétaro, sin acuíferos superficiales
+        [21.323, -101.723], // Planicie central de Guanajuato, alejada de presas
+        [24.727, -101.982], // Desierto de San Luis Potosí, completamente seco
+        [19.834, -97.648],  // Lomeríos de Puebla, sin ríos cercanos
+      ];
+
+      // Seleccionar una zona base aleatoria
+      const zonaBase = zonasBases[Math.floor(Math.random() * zonasBases.length)];
+
+      // Añadir un offset mínimo para mantener zonas alejadas de carreteras y agua
+      const latOffset = (Math.random() - 0.5) * 0.05; // Offset muy pequeño
+      const lngOffset = (Math.random() - 0.5) * 0.05; // Offset muy pequeño
+
+      const newLat = zonaBase[0] + latOffset;
+      const newLng = zonaBase[1] + lngOffset;
+
+      // Actualizar el mapa
+      map.setView([newLat, newLng], 16); // Zoom alto para ver detalles del terreno seco
+      marker.setLatLng([newLat, newLng]);
+
+      // Rotar entre diferentes formas
+      const formas = ['circle', 'square', 'pentagon', 'hexagon'];
+      const nextShapeIndex = (formas.indexOf(currentShapeType) + 1) % formas.length;
+      const nextShape = formas[nextShapeIndex];
+
+      // Crear nueva forma
+      crearForma(nextShape, [newLat, newLng]);
+
+      // Actualizar información
+      actualizarInfoMapa(newLat, newLng);
+
+      showNotification('Parcela de temporal cambiada. Forma: ' + nextShape);
+    }
+
+    // Inicializar gráfica de clima
+    function initClimaChart() {
+      const ctx = document.getElementById('climaChart').getContext('2d');
+      climaChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+          datasets: [{
+            label: 'Temperatura (°C)',
+            data: [18, 20, 22, 24, 26, 25, 23, 23, 23, 22, 20, 18],
+            borderColor: 'rgba(230, 57, 70, 1)',
+            backgroundColor: 'rgba(230, 57, 70, 0.1)',
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true
+          }, {
+            label: 'Precipitación (mm)',
+            data: [10, 5, 7, 20, 50, 120, 150, 140, 120, 60, 20, 10],
+            borderColor: 'rgba(66, 135, 245, 1)',
+            backgroundColor: 'rgba(66, 135, 245, 0.1)',
+            borderWidth: 2,
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Clima Anual - Zona Agrícola'
+            }
+          }
+        }
+      });
+    }
+
+    // Mostrar notificación
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      const notificationText = document.getElementById('notification-text');
+      notificationText.textContent = message;
+      notification.style.display = 'block';
+      notification.style.animation = 'none';
+      void notification.offsetWidth;
+      notification.style.animation = 'slideIn 0.5s forwards, fadeOut 0.5s forwards 2.5s';
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    // Simular cambio climático
+    function simularCambioClima() {
+      const temp = document.getElementById('temp-actual');
+      const humedad = document.getElementById('humedad-actual');
+      const viento = document.getElementById('viento-actual');
+      const lluvia = document.getElementById('lluvia-actual');
+
+      const nuevaTemp = Math.floor(Math.random() * 15) + 15;
+      const nuevaHumedad = Math.floor(Math.random() * 40) + 40;
+      const nuevoViento = Math.floor(Math.random() * 20) + 5;
+      const nuevaLluvia = Math.random() > 0.7 ? (Math.random() * 5).toFixed(1) : '0';
+
+      temp.textContent = nuevaTemp + '°C';
+      humedad.textContent = nuevaHumedad + '%';
+      viento.textContent = nuevoViento + ' km/h';
+      lluvia.textContent = nuevaLluvia + ' mm';
+
+      climaChart.data.datasets[0].data = climaChart.data.datasets[0].data.map(() => Math.floor(Math.random() * 15) + 15);
+      climaChart.data.datasets[1].data = climaChart.data.datasets[1].data.map(() => Math.floor(Math.random() * 100));
+      climaChart.update();
+
+      showNotification('Datos climáticos actualizados');
+    }
+
+    // Generar recomendación de IA
+    function generarRecomendacion() {
+      const cultivo = document.getElementById('tipo-cultivo').value;
+      const suelo = document.getElementById('tipo-suelo').value;
+
+      // Actualizar valores de rendimiento y eficiencia
+      document.getElementById('rendimiento-valor').textContent = (Math.floor(Math.random() * 25) + 70) + '%';
+      document.getElementById('rendimiento-barra').style.width = document.getElementById('rendimiento-valor').textContent;
+
+      document.getElementById('eficiencia-valor').textContent = (Math.floor(Math.random() * 20) + 75) + '%';
+      document.getElementById('eficiencia-barra').style.width = document.getElementById('eficiencia-valor').textContent;
+
+      // Actualizar recomendación basada en cultivo y suelo
+      const recomendaciones = {
+        'Maíz': {
+          'Arcilloso': 'El maíz en suelo arcilloso requiere labranza profunda y drenaje adecuado. Aplicar fósforo al momento de la siembra.',
+          'Arenoso': 'Para maíz en suelo arenoso aumente frecuencia de riego y fertilizantes nitrogenados en dosis menores pero más frecuentes.',
+          'Limoso': 'El maíz en suelo limoso tiene excelente desarrollo. Monitoree niveles de nitrógeno durante floración.',
+          'Franco': 'El suelo franco es ideal para maíz. Mantenga humedad uniforme para maximizar rendimiento.'
+        },
+        'Trigo': {
+          'Arcilloso': 'El trigo en suelo arcilloso necesita una excelente preparación. Evite exceso de humedad en etapa de maduración.',
+          'Arenoso': 'Trigo en suelo arenoso requiere mayor aporte de nutrientes y materia orgánica. Riegue con frecuencia.',
+          'Limoso': 'Para trigo en suelo limoso controle malezas agresivamente en etapas tempranas.',
+          'Franco': 'El trigo en suelo franco tiene potencial de alto rendimiento. Aplique fungicida preventivo.'
+        },
+        'Soja': {
+          'Arcilloso': 'La soja en suelo arcilloso requiere inoculación adecuada. Evite compactación para buen desarrollo radicular.',
+          'Arenoso': 'Soja en suelo arenoso necesita riego frecuente y mayor dosis de inoculante.',
+          'Limoso': 'Para soja en suelo limoso monitoree insectos chupadores durante floración y llenado de vainas.',
+          'Franco': 'La soja se adapta bien a suelo franco. Mantenga distanciamiento adecuado entre surcos.'
+        },
+        'Arroz': {
+          'Arcilloso': 'El arroz prospera en suelo arcilloso. Mantenga lámina de agua entre 5-10cm durante etapa vegetativa.',
+          'Arenoso': 'El arroz en suelo arenoso no es recomendable. Requiere impermeabilización artificial del suelo.',
+          'Limoso': 'Para arroz en suelo limoso, aplique fertilizante nitrogenado fraccionado en tres etapas.',
+          'Franco': 'El arroz en suelo franco-arcilloso puede dar buenos resultados con manejo adecuado del agua.'
+        }
+      };
+
+      // Obtener recomendación específica o usar una genérica
+      let recomendacion = recomendaciones[cultivo]?.[suelo] ||
+        `No hay recomendación específica para ${cultivo} en suelo ${suelo}. Consulte con un agrónomo local.`;
+
+      // Actualizar texto de recomendación
+      document.getElementById('texto-recomendacion').innerText = recomendacion;
+
+      showNotification('Recomendación generada para ' + cultivo + ' en suelo ' + suelo);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      // Verificar si hay un usuario activo
+      const usuarioActivo = localStorage.getItem("usuarioActivo");
+      if (usuarioActivo) {
+        document.getElementById("loginNavItem").style.display = "none";
+        document.getElementById("panelNavItem").style.display = "block";
+      }
+
+      // Inicializar componentes
+      initMap();
+      initClimaChart();
+
+      // Configurar formulario de contacto
+      if (document.getElementById("contactForm")) {
+        document.getElementById("contactForm").addEventListener("submit", function(e) {
+          e.preventDefault();
+          const nombre = document.getElementById("name").value;
+          showNotification(`Gracias ${nombre}, tu mensaje ha sido enviado.`);
+          this.reset();
+        });
+      }
+
+      // Scroll suave para enlaces internos
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = this.getAttribute('href');
+          if (targetId !== "#") {
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+              window.scrollTo({
+                top: targetElement.getBoundingClientRect().top + window.pageYOffset,
+                behavior: 'smooth'
+              });
+            }
+          }
+        });
+      });
+
+      // Mostrar notificación de bienvenida
+      setTimeout(() => {
+        showNotification('¡Bienvenido a SmartGrow!');
+      }, 1000);
+    });
+  </script>
+
+  <!-- Scripts de Bootstrap -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
