@@ -1,4 +1,5 @@
 --- Descripción general del proyecto ---
+
 Alumnos: Jorge Alan Urias Guluarte, Juan Francisco Lung Reyna, Israel Martinez Carpio
 Fecha: 26 de Mayo del 2025
 
