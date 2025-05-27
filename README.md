@@ -10,7 +10,8 @@ SmartGrow es un gestor inteligente de datos climáticos el cual cuenta con cuatr
 4. ChatBOT agrícola. Inteligencias artificiales generativas que brinden asistencia interactiva a través de Telegram o plataformas web.
 
 Para poder llevar a cabo la integración de estos elementos se utilizó un esquema el cual contempla tres pilares fundamentales para montaje del proyecto siendo los siguientes:
-  A) Backend: Procesamiento de datos, extracción y desarrollo de código necesario para el funcionamiento del sistema.
-  B) Frontend: Vistas de usuario e integración de página web.
-  C) Database: Almacenamiento de los datos recabados y logins.
+  1. Backend: Procesamiento de datos, extracción y desarrollo de código necesario para el funcionamiento del sistema.
+  2. Frontend: Vistas de usuario e integración de página web.
+  3. Database: Almacenamiento de los datos recabados y logins.
+  
 Estas tres partes se integran y pueden ser ejecutadas de forma independiente para el montaje final del proyecto SmartGrow.
