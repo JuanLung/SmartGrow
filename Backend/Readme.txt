@@ -27,5 +27,8 @@ al modelo realice recomendaciones y sugerencias en base a la información propor
 De esta manera se obtiene una recomendación totalmente personalizada y adaptada al usuario. Se manda la consulta a la IA y se regresa la
 respuesta al usuario. 
 
-3. El último código utilizado en el backend es ExtraccionClima.py, este archivo se ejecuta de manera independiente. Se utiliza para recopilar datos climáticos de fuentes externas por medio de una API, en este caso la API de OpenWeatherMap. Este archivo lo que hace es configurar la API utilizada, selecciona la ubicación del usuario y se realizan consultas a la APi mandando las coordenadas ingresadas. Se captan los datos y se procesan para ser almacenados en un archivo CSV llamado clima abierto.csv.
+3. El último código utilizado en el backend es ExtraccionClima.py, este archivo se ejecuta de manera independiente. Se utiliza para
+recopilar datos climáticos de fuentes externas por medio de una API, en este caso la API de OpenWeatherMap. Este archivo lo que hace es
+configurar la API utilizada, selecciona la ubicación del usuario y se realizan consultas a la APi mandando las coordenadas ingresadas. Se
+captan los datos y se procesan para ser almacenados en un archivo CSV llamado clima abierto.csv.
 
