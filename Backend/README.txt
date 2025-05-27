@@ -1,5 +1,6 @@
 --- Descripción de Backend ---
 Alumno: Jorge Alan Urias Guluarte 
+Fecha: 26 de Mayo del 2025
 
 Esta sección cuenta con tres archivos de python para la extracción de datos y configuración de chatbot, dos csv donde se almacenan los
 datos recabados y un archivo tipo .ino que es una extensión utilizada en entornos de desarrollo con arduino. 
